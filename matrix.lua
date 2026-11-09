@@ -238,7 +238,6 @@ local function createSlider(name, min, max, defaultVal, callback)
 	local fill = Instance.new("Frame")
 	fill.Parent = sliderBar
 	fill.BackgroundColor3 = Color3.fromRGB(0, 255, 65)
-	-- Set initial visual fill based on defaultVal
 	local initialAlpha = (defaultVal - min) / (max - min)
 	fill.Size = UDim2.new(initialAlpha, 0, 1, 0)
 	
@@ -300,7 +299,7 @@ createToggle("NO GRAVITY", function(state)
 	end
 end)
 
--- 3. GUI SIZE (1-500, starting comfortably at 350)
+-- 3. GUI SIZE (1-500)
 createSlider("GUI SIZE", 1, 500, 350, function(val)
 	local scale = val / 350
 	mainFrame.Size = UDim2.new(0, math.clamp(350 * scale, 150, 700), 0, math.clamp(400 * scale, 150, 750))
@@ -415,7 +414,6 @@ toggleBall.MouseButton1Click:Connect(function()
 		mainFrame.Size = UDim2.new(0, 0, 0, 0)
 		mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 		
-		-- Glitch/Matrix expansion effect
 		TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 			Size = UDim2.new(0, 350, 0, 400),
 			Position = UDim2.new(0.5, -175, 0.5, -200)
@@ -423,7 +421,6 @@ toggleBall.MouseButton1Click:Connect(function()
 		
 		TweenService:Create(toggleBall, TweenInfo.new(0.3), {Rotation = 360}):Play()
 	else
-		-- Collapse animation
 		local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
 			Size = UDim2.new(0, 0, 0, 0),
 			Position = UDim2.new(0.5, 0, 0.5, 0)
