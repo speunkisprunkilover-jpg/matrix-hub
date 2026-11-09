@@ -1,4 +1,4 @@
--- Matrix Mod Menu (Ultimate Edition) by speunkisprunkilover-jpg
+-- Matrix Mod Menu (50x Cyberpunk Edition) by speunkisprunkilover-jpg
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
@@ -33,16 +33,16 @@ screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.IgnoreGuiInset = true
 
 --------------------------------------------------------------------------------
--- 50X BETTER CYBER-MATRIX LOADING SCREEN (10 Seconds)
+-- 50X BETTER CYBERPUNK LOADING SEQUENCE (10 Seconds)
 --------------------------------------------------------------------------------
 local loadScreen = Instance.new("Frame")
 loadScreen.Name = "LoadScreen"
 loadScreen.Parent = screenGui
-loadScreen.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+loadScreen.BackgroundColor3 = Color3.fromRGB(0, 2, 1)
 loadScreen.Size = UDim2.new(1, 0, 1, 0)
 loadScreen.ZIndex = 100
 
--- Central Holographic Terminal Frame
+-- Hex Grid background decoration effect
 local loadFrame = Instance.new("Frame")
 loadFrame.Parent = loadScreen
 loadFrame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -59,49 +59,49 @@ loadStroke.Parent = loadFrame
 loadStroke.Color = Color3.fromRGB(0, 255, 65)
 loadStroke.Thickness = 2.5
 
--- Glowing Scanline Effect overlay
-local scanline = Instance.new("Frame")
-scanline.Parent = loadFrame
-scanline.BackgroundColor3 = Color3.fromRGB(0, 255, 65)
-scanline.BackgroundTransparency = 0.85
-scanline.Size = UDim2.new(1, 0, 0, 3)
+-- Holographic glow effect
+local loadGlow = Instance.new("UIStroke")
+loadGlow.Parent = loadFrame
+loadGlow.Color = Color3.fromRGB(0, 255, 65)
+loadGlow.Thickness = 6
+loadGlow.Transparency = 0.6
 
-local loadText = Instance.new("TextLabel")
-loadText.Parent = loadFrame
-loadText.BackgroundTransparency = 1
-loadText.Position = UDim2.new(0, 0, 0, 15)
-loadText.Size = UDim2.new(1, 0, 0, 25)
-loadText.Font = Enum.Font.Code
-loadText.Text = "[ DECRYPTING MATRIX PROTOCOL ]"
-loadText.TextColor3 = Color3.fromRGB(0, 255, 65)
-loadText.TextSize = 13
+local loadTitle = Instance.new("TextLabel")
+loadTitle.Parent = loadFrame
+loadTitle.BackgroundTransparency = 1
+loadTitle.Position = UDim2.new(0, 0, 0, 12)
+loadTitle.Size = UDim2.new(1, 0, 0, 25)
+loadTitle.Font = Enum.Font.Code
+loadTitle.Text = "DECRYPTING MATRIX KERNEL..."
+loadTitle.TextColor3 = Color3.fromRGB(0, 255, 65)
+loadTitle.TextSize = 13
 
 local statusText = Instance.new("TextLabel")
 statusText.Parent = loadFrame
 statusText.BackgroundTransparency = 1
-statusText.Position = UDim2.new(0, 0, 0, 42)
+statusText.Position = UDim2.new(0, 0, 0, 38)
 statusText.Size = UDim2.new(1, 0, 0, 20)
 statusText.Font = Enum.Font.Code
-statusText.Text = "Initializing neural link..."
-statusText.TextColor3 = Color3.fromRGB(120, 255, 150)
+statusText.Text = "Initializing sub-routines..."
+statusText.TextColor3 = Color3.fromRGB(0, 180, 45)
 statusText.TextSize = 11
 
 local percentText = Instance.new("TextLabel")
 percentText.Parent = loadFrame
 percentText.BackgroundTransparency = 1
-percentText.Position = UDim2.new(0, 0, 0, 102)
+percentText.Position = UDim2.new(0, 0, 0, 104)
 percentText.Size = UDim2.new(1, 0, 0, 25)
 percentText.Font = Enum.Font.Code
 percentText.Text = "0%"
 percentText.TextColor3 = Color3.fromRGB(0, 255, 65)
 percentText.TextSize = 15
 
--- Loading Bar Container
+-- Sci-fi Loading Bar
 local barBg = Instance.new("Frame")
 barBg.Parent = loadFrame
-barBg.BackgroundColor3 = Color3.fromRGB(0, 18, 5)
-barBg.Position = UDim2.new(0.08, 0, 0, 75)
-barBg.Size = UDim2.new(0.84, 0, 0, 18)
+barBg.BackgroundColor3 = Color3.fromRGB(0, 15, 5)
+barBg.Position = UDim2.new(0.08, 0, 0, 72)
+barBg.Size = UDim2.new(0.84, 0, 0, 22)
 
 local barBgCorner = Instance.new("UICorner")
 barBgCorner.CornerRadius = UDim.new(0, 6)
@@ -116,7 +116,7 @@ local barFillCorner = Instance.new("UICorner")
 barFillCorner.CornerRadius = UDim.new(0, 6)
 barFillCorner.Parent = barFill
 
--- Background Matrix Glyph Rain
+-- Dynamic Matrix code rain during load
 task.spawn(function()
 	local chars = "01ABCDEFXYZ#*+-_@$ΩΨ"
 	while loadScreen.Parent do
@@ -126,40 +126,30 @@ task.spawn(function()
 		glyph.Position = UDim2.new(math.random(), 0, -0.1, 0)
 		glyph.Size = UDim2.new(0, 20, 0, 20)
 		glyph.Font = Enum.Font.Code
-		glyph.TextColor3 = Color3.fromRGB(0, math.random(120, 255), 35)
+		glyph.TextColor3 = Color3.fromRGB(0, math.random(120, 255), 40)
 		glyph.TextSize = math.random(14, 22)
 		glyph.Text = string.sub(chars, math.random(1, #chars), math.random(1, #chars))
 		
-		TweenService:Create(glyph, TweenInfo.new(1.4, Enum.EasingStyle.Linear), {
+		TweenService:Create(glyph, TweenInfo.new(1.2, Enum.EasingStyle.Linear), {
 			Position = UDim2.new(glyph.Position.X.Scale, 0, 1.1, 0),
 			TextTransparency = 1
 		}):Play()
-		task.delay(1.4, function() glyph:Destroy() end)
-		task.wait(0.04)
+		task.delay(1.2, function() glyph:Destroy() end)
+		task.wait(0.02)
 	end
 end)
 
--- Scanline bounce animation
-task.spawn(function()
-	while loadFrame.Parent do
-		TweenService:Create(scanline, TweenInfo.new(1.2, Enum.EasingStyle.Sine), {Position = UDim2.new(0, 0, 0, 130)}):Play()
-		task.wait(1.2)
-		TweenService:Create(scanline, TweenInfo.new(1.2, Enum.EasingStyle.Sine), {Position = UDim2.new(0, 0, 0, 3)}):Play()
-		task.wait(1.2)
-	end
-end)
-
--- 10-Second Progressive Loading Sequence with Status Updates
+-- 10-Second Cinematic Progress Sequence
 task.spawn(function()
 	local startTime = tick()
 	local duration = 10
 	
 	local statuses = {
 		{0.15, "Bypassing server security..."},
-		{0.35, "Injecting custom memory hooks..."},
-		{0.60, "Calibrating physics engine..."},
-		{0.80, "Optimizing mobile UI layout..."},
-		{0.95, "Establishing secure connection..."}
+		{0.35, "Injected core exploit hooks..."},
+		{0.55, "Calibrating vector fields..."},
+		{0.75, "Loading graphical interface..."},
+		{0.90, "Finalizing matrix link..."}
 	}
 	
 	while true do
@@ -177,11 +167,11 @@ task.spawn(function()
 		end
 		
 		if alpha >= 1 then break end
-		task.wait(0.03)
+		task.wait(0.02)
 	end
 	
-	statusText.Text = "ACCESS GRANTED. WELCOME."
-	percentText.Text = "100%"
+	loadTitle.Text = "ACCESS GRANTED"
+	statusText.Text = "Welcome to the Matrix."
 	task.wait(0.5)
 	
 	-- Dramatic exit animation
@@ -270,7 +260,7 @@ scrollContainer.Parent = mainFrame
 scrollContainer.BackgroundTransparency = 1
 scrollContainer.Position = UDim2.new(0, 0, 0, 50)
 scrollContainer.Size = UDim2.new(1, 0, 1, -50)
-scrollContainer.CanvasSize = UDim2.new(0, 0, 0, 1350)
+scrollContainer.CanvasSize = UDim2.new(0, 0, 0, 1400)
 scrollContainer.ScrollBarThickness = 5
 scrollContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 65)
 
@@ -421,7 +411,7 @@ local function createSlider(name, min, max, defaultVal, callback)
 		end
 	end))
 
-	table.insert(connections, sliderBar.InputEnded:Connect(function(input)
+	table.insert(connections, UserInputService.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = false
 		end
@@ -496,7 +486,7 @@ table.insert(connections, RunService.RenderStepped:Connect(function()
 	end
 end))
 
--- 5. INVISIBLE
+-- 5. INVISIBLE (Local Only)
 createToggle("INVISIBLE (Local Only)", function(state)
 	if character then
 		for _, part in ipairs(character:GetDescendants()) do
@@ -568,7 +558,7 @@ table.insert(connections, RunService.RenderStepped:Connect(function()
 				local hrp = p.Character.HumanoidRootPart
 				hrp.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
 				hrp.Transparency = 0.7
-				hrp.BrickColor = BrickColor.new("Lime green")
+				hrp.BrickColor = BrickColor.new("Bright green")
 				hrp.CanCollide = false
 			end
 		end
@@ -589,20 +579,13 @@ table.insert(connections, RunService.RenderStepped:Connect(function()
 	if flyEnabled and rootPart then
 		local camCFrame = Camera.CFrame
 		local moveDir = Vector3.new()
-		if UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService:IsKeyDown(Enum.KeyCode.Up) then
-			moveDir = moveDir + camCFrame.LookVector
-		end
-		if UserInputService:IsKeyDown(Enum.KeyCode.S) or UserInputService:IsKeyDown(Enum.KeyCode.Down) then
-			moveDir = moveDir - camCFrame.LookVector
-		end
-		if UserInputService:IsKeyDown(Enum.KeyCode.A) or UserInputService:IsKeyDown(Enum.KeyCode.Left) then
-			moveDir = moveDir - camCFrame.RightVector
-		end
-		if UserInputService:IsKeyDown(Enum.KeyCode.D) or UserInputService:IsKeyDown(Enum.KeyCode.Right) then
-			moveDir = moveDir + camCFrame.RightVector
-		end
-		rootPart.Velocity = Vector3.new(0, 1, 0) -- anti gravity ef		rootPart.Velocity = Vector3.new(0, 1, 0) -- anti gravity effect while flying
-		rootPart.CFrame = rootPart.CFrame + (moveDir * (flySpeed / 20))
+		if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camCFrame.LookVector end
+		if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camCFrame.LookVector end
+		if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camCFrame.RightVector end
+		if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camCFrame.RightVector end
+		
+		rootPart.Velocity = moveDir * flySpeed
+		rootPart.CFrame = CFrame.new(rootPart.Position, rootPart.Position + camCFrame.LookVector)
 	end
 end))
 
@@ -613,30 +596,28 @@ createToggle("SHIFT LOCK TOGGLE", function(state)
 	player.DevEnableMouseLock = state
 end)
 
--- 13. FREE CAM
-local freeCamEnabled = false
-local freeCamPos = Camera.CFrame
-createToggle("FREE CAM", function(state)
-	freeCamEnabled = state
+-- 13. FREECAM
+local freecamEnabled = false
+local camConn
+createToggle("FREECAM", function(state)
+	freecamEnabled = state
 	if state then
-		freeCamPos = Camera.CFrame
 		Camera.CameraType = Enum.CameraType.Scriptable
+		local camPos = Camera.CFrame.Position
+		camConn = RunService.RenderStepped:Connect(function(dt)
+			local move = Vector3.new()
+			if UserInputService:IsKeyDown(Enum.KeyCode.W) then move = move + Vector3.new(0,0,-1) end
+			if UserInputService:IsKeyDown(Enum.KeyCode.S) then move = move + Vector3.new(0,0,1) end
+			if UserInputService:IsKeyDown(Enum.KeyCode.A) then move = move + Vector3.new(-1,0,0) end
+			if UserInputService:IsKeyDown(Enum.KeyCode.D) then move = move + Vector3.new(1,0,0) end
+			camPos = camPos + (Camera.CFrame:VectorToWorldSpace(move) * 60 * dt)
+			Camera.CFrame = CFrame.new(camPos) * Camera.CFrame - Camera.CFrame.Position
+		end)
 	else
+		if camConn then camConn:Disconnect() end
 		Camera.CameraType = Enum.CameraType.Custom
 	end
 end)
-
-table.insert(connections, RunService.RenderStepped:Connect(function()
-	if freeCamEnabled then
-		local camMove = Vector3.new()
-		if UserInputService:IsKeyDown(Enum.KeyCode.W) then camMove = camMove + Vector3.new(0, 0, -1) end
-		if UserInputService:IsKeyDown(Enum.KeyCode.S) then camMove = camMove + Vector3.new(0, 0, 1) end
-		if UserInputService:IsKeyDown(Enum.KeyCode.A) then camMove = camMove + Vector3.new(-1, 0, 0) end
-		if UserInputService:IsKeyDown(Enum.KeyCode.D) then camMove = camMove + Vector3.new(1, 0, 0) end
-		freeCamPos = freeCamPos + (Camera.CFrame:VectorToWorldSpace(camMove) * 1.5)
-		Camera.CFrame = CFrame.new(freeCamPos.Position, freeCamPos.Position + Camera.CFrame.LookVector)
-	end
-end))
 
 --------------------------------------------------------------------------------
 -- UNLOAD SCRIPT BUTTON
@@ -662,11 +643,12 @@ unloadStroke.Thickness = 1
 
 table.insert(connections, unloadBtn.MouseButton1Click:Connect(function()
 	workspace.Gravity = 196.2
-	Camera.CameraType = Enum.CameraType.Custom
 	if humanoid then
 		humanoid.WalkSpeed = 16
 		humanoid.JumpPower = 50
 	end
+	if camConn then camConn:Disconnect() end
+	Camera.CameraType = Enum.CameraType.Custom
 	for _, conn in ipairs(connections) do
 		conn:Disconnect()
 	end
