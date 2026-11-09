@@ -1,4 +1,4 @@
--- Matrix Mod Menu by speunkisprunkilover-jpg
+-- Matrix Mod Menu by speunkisprunkilover-jpg (Upgraded Edition)
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local RunService = game:GetService("RunService")
@@ -11,11 +11,19 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local rootPart = character:WaitForChild("HumanoidRootPart")
 
-player.CharacterAdded:Connect(function(char)
+-- Active connections tracking for clean unloading
+local activeConnections = {}
+
+local function trackConnection(conn)
+	table.insert(activeConnections, conn)
+	return conn
+end
+
+trackConnection(player.CharacterAdded:Connect(function(char)
 	character = char
 	humanoid = char:WaitForChild("Humanoid")
 	rootPart = char:WaitForChild("HumanoidRootPart")
-end)
+end))
 
 -- Remove existing GUI if re-executed
 if CoreGui:FindFirstChild("MatrixModMenu") then
@@ -30,7 +38,7 @@ screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.IgnoreGuiInset = true
 
 --------------------------------------------------------------------------------
--- LOADING SCREEN ANIMATION
+-- CINEMATIC MATRIX LOADING SCREEN
 --------------------------------------------------------------------------------
 local loadScreen = Instance.new("Frame")
 loadScreen.Name = "LoadScreen"
@@ -48,28 +56,39 @@ loadText.Font = Enum.Font.Code
 loadText.Text = "INITIALIZING MATRIX..."
 loadText.TextColor3 = Color3.fromRGB(0, 255, 65)
 loadText.TextSize = 24
+loadText.TextTransparency = 1
 
--- Matrix code rain effect during load
-task.spawn(function()
+TweenService:Create(loadText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+
+-- Code rain visual effect
+local rainRoutine = task.spawn(function()
 	local chars = "01ABCDEFXYZ#*+-_"
-	for i = 1, 20 do
+	while loadScreen and loadScreen.Parent do
 		local glyph = Instance.new("TextLabel")
 		glyph.Parent = loadScreen
 		glyph.BackgroundTransparency = 1
-		glyph.Position = UDim2.new(math.random(), 0, math.random(), 0)
+		glyph.Position = UDim2.new(math.random(), 0, -0.1, 0)
 		glyph.Size = UDim2.new(0, 20, 0, 20)
 		glyph.Font = Enum.Font.Code
-		glyph.TextColor3 = Color3.fromRGB(0, 150, 35)
-		glyph.TextSize = 18
+		glyph.TextColor3 = Color3.fromRGB(0, 200, 45)
+		glyph.TextSize = math.random(14, 22)
 		glyph.Text = string.sub(chars, math.random(1, #chars), math.random(1, #chars))
-		task.delay(0.7, function() glyph:Destroy() end)
+		
+		TweenService:Create(glyph, TweenInfo.new(1.2, Enum.EasingStyle.Linear), {
+			Position = UDim2.new(glyph.Position.X.Scale, 0, 1.1, 0),
+			TextTransparency = 1
+		}):Play()
+		
+		task.delay(1.2, function() glyph:Destroy() end)
+		task.wait(0.05)
 	end
 end)
 
-task.wait(1.5)
-TweenService:Create(loadScreen, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
-TweenService:Create(loadText, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-task.wait(0.8)
+task.wait(1.8)
+task.cancel(rainRoutine)
+TweenService:Create(loadScreen, TweenInfo.new(0.6, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+TweenService:Create(loadText, TweenInfo.new(0.6, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
+task.wait(0.6)
 loadScreen:Destroy()
 
 --------------------------------------------------------------------------------
@@ -95,18 +114,22 @@ ballStroke.Parent = toggleBall
 ballStroke.Color = Color3.fromRGB(0, 255, 65)
 ballStroke.Thickness = 2
 
--- Pulsing animation for the ball
+-- Smooth floating bounce animation for the toggle ball
 task.spawn(function()
 	while toggleBall and toggleBall.Parent do
-		TweenService:Create(ballStroke, TweenInfo.new(0.6), {Transparency = 0.2}):Play()
-		task.wait(0.6)
-		TweenService:Create(ballStroke, TweenInfo.new(0.6), {Transparency = 0.8}):Play()
-		task.wait(0.6)
+		TweenService:Create(toggleBall, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+			Position = toggleBall.Position + UDim2.new(0, 0, 0, -6)
+		}):Play()
+		task.wait(1)
+		TweenService:Create(toggleBall, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+			Position = toggleBall.Position + UDim2.new(0, 0, 0, 6)
+		}):Play()
+		task.wait(1)
 	end
 end)
 
 --------------------------------------------------------------------------------
--- MAIN MENU GUI (Default mobile-friendly size: 350x400)
+-- MAIN MENU GUI (Draggable + Mobile Friendly)
 --------------------------------------------------------------------------------
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
@@ -119,16 +142,16 @@ mainFrame.ClipsDescendants = true
 mainFrame.Visible = false
 
 local frameCorner = Instance.new("UICorner")
-frameCorner.CornerRadius = UDim.new(0, 12)
+frameCorner.CornerRadius = UDim.new(0, 14)
 frameCorner.Parent = mainFrame
 
 local frameStroke = Instance.new("UIStroke")
 frameStroke.Parent = mainFrame
 frameStroke.Color = Color3.fromRGB(0, 255, 65)
-frameStroke.Thickness = 2
+frameStroke.Thickness = 2.5
 
--- Title Bar
-local titleBar = Instance.new("TextLabel")
+-- Title Bar (Draggable Handler)
+local titleBar = Instance.new("TextButton")
 titleBar.Name = "TitleBar"
 titleBar.Parent = mainFrame
 titleBar.BackgroundColor3 = Color3.fromRGB(0, 25, 8)
@@ -138,10 +161,33 @@ titleBar.Text = " [ MATRIX MOD MENU ]"
 titleBar.TextColor3 = Color3.fromRGB(0, 255, 65)
 titleBar.TextSize = 15
 titleBar.TextXAlignment = Enum.TextXAlignment.Left
+titleBar.AutoButtonColor = false
 
 local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.CornerRadius = UDim.new(0, 14)
 titleCorner.Parent = titleBar
+
+-- Draggable implementation for Main Frame
+local dragging, dragInput, dragStart, startPos
+titleBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+trackConnection(UserInputService.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		local delta = input.Position - dragStart
+		mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end))
 
 -- Scrolling Container for Features
 local scrollContainer = Instance.new("ScrollingFrame")
@@ -149,7 +195,7 @@ scrollContainer.Parent = mainFrame
 scrollContainer.BackgroundTransparency = 1
 scrollContainer.Position = UDim2.new(0, 0, 0, 50)
 scrollContainer.Size = UDim2.new(1, 0, 1, -50)
-scrollContainer.CanvasSize = UDim2.new(0, 0, 0, 850)
+scrollContainer.CanvasSize = UDim2.new(0, 0, 0, 950)
 scrollContainer.ScrollBarThickness = 6
 scrollContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 65)
 
@@ -160,7 +206,7 @@ uiLayout.SortOrder = Enum.SortOrder.LayoutOrder
 uiLayout.Padding = UDim.new(0, 10)
 
 --------------------------------------------------------------------------------
--- HELPER BUILDERS (Buttons & Sliders)
+-- HELPER BUILDERS WITH JUICY ANIMATIONS
 --------------------------------------------------------------------------------
 local function createToggle(name, callback)
 	local btn = Instance.new("TextButton")
@@ -174,7 +220,7 @@ local function createToggle(name, callback)
 	btn.TextXAlignment = Enum.TextXAlignment.Left
 
 	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 6)
+	corner.CornerRadius = UDim.new(0, 8)
 	corner.Parent = btn
 
 	local stroke = Instance.new("UIStroke")
@@ -185,14 +231,27 @@ local function createToggle(name, callback)
 	local active = false
 	btn.MouseButton1Click:Connect(function()
 		active = not active
+		
+		-- Juicy click feedback animation
+		TweenService:Create(btn, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0.85, 0, 0, 40)
+		}):Play()
+		task.delay(0.15, function()
+			if btn and btn.Parent then
+				TweenService:Create(btn, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Size = UDim2.new(0.9, 0, 0, 45)
+				}):Play()
+			end
+		end)
+
 		if active then
 			btn.Text = "  [X] " .. name
-			btn.BackgroundColor3 = Color3.fromRGB(0, 60, 20)
-			stroke.Color = Color3.fromRGB(0, 255, 65)
+			TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(0, 70, 25)}):Play()
+			TweenService:Create(stroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(0, 255, 65)}):Play()
 		else
 			btn.Text = "  [ ] " .. name
-			btn.BackgroundColor3 = Color3.fromRGB(10, 30, 12)
-			stroke.Color = Color3.fromRGB(0, 150, 35)
+			TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(10, 30, 12)}):Play()
+			TweenService:Create(stroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(0, 150, 35)}):Play()
 		end
 		callback(active)
 	end)
@@ -205,7 +264,7 @@ local function createSlider(name, min, max, defaultVal, callback)
 	container.Size = UDim2.new(0.9, 0, 0, 65)
 
 	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 6)
+	corner.CornerRadius = UDim.new(0, 8)
 	corner.Parent = container
 
 	local stroke = Instance.new("UIStroke")
@@ -245,7 +304,7 @@ local function createSlider(name, min, max, defaultVal, callback)
 	fillCorner.CornerRadius = UDim.new(0, 4)
 	fillCorner.Parent = fill
 
-	local dragging = false
+	local draggingSlider = false
 	
 	local function update(input)
 		local pos = math.clamp((input.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X, 0, 1)
@@ -257,22 +316,22 @@ local function createSlider(name, min, max, defaultVal, callback)
 
 	sliderBar.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
+			draggingSlider = true
 			update(input)
 		end
 	end)
 
-	UserInputService.InputChanged:Connect(function(input)
-		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+	trackConnection(UserInputService.InputChanged:Connect(function(input)
+		if draggingSlider and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 			update(input)
 		end
-	end)
+	end))
 
-	UserInputService.InputEnded:Connect(function(input)
+	trackConnection(UserInputService.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = false
+			draggingSlider = false
 		end
-	end)
+	end))
 end
 
 --------------------------------------------------------------------------------
@@ -281,11 +340,11 @@ end
 
 -- 1. INF JUMP
 local infJumpEnabled = false
-UserInputService.JumpRequest:Connect(function()
+trackConnection(UserInputService.JumpRequest:Connect(function()
 	if infJumpEnabled and humanoid then
 		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 	end
-end)
+end))
 createToggle("INF JUMP", function(state)
 	infJumpEnabled = state
 end)
@@ -315,7 +374,7 @@ createSlider("AIMBOT FOV", 0, 250, 50, function(val)
 	aimbotFov = val
 end)
 
-RunService.RenderStepped:Connect(function()
+trackConnection(RunService.RenderStepped:Connect(function()
 	if aimbotEnabled then
 		local closestTarget = nil
 		local shortestDist = aimbotFov
@@ -341,9 +400,9 @@ RunService.RenderStepped:Connect(function()
 			Camera.CFrame = CFrame.new(Camera.CFrame.Position, closestTarget.Position)
 		end
 	end
-end)
+end))
 
--- 5. INVISIBLE (Local transparency, server sees you)
+-- 5. INVISIBLE
 createToggle("INVISIBLE (Local Only)", function(state)
 	if character then
 		for _, part in ipairs(character:GetDescendants()) do
@@ -354,7 +413,7 @@ createToggle("INVISIBLE (Local Only)", function(state)
 	end
 end)
 
--- 6. TINY (Makes character small)
+-- 6. TINY AVATAR
 createToggle("TINY AVATAR", function(state)
 	if character and character:FindFirstChild("Humanoid") then
 		local desc = character.Humanoid:GetAppliedDescription()
@@ -373,37 +432,72 @@ createToggle("TINY AVATAR", function(state)
 	end
 end)
 
--- 7. JUMP BOOST (0-500)
+-- 7. JUMP BOOST
 createSlider("JUMP BOOST", 0, 500, 50, function(val)
 	if humanoid then
 		humanoid.JumpPower = 50 + val
 	end
 end)
 
--- 8. NORMAL SPEED BOOST (0-1000)
+-- 8. NORMAL SPEED BOOST
 createSlider("NORMAL SPEED BOOST", 0, 1000, 16, function(val)
 	if humanoid then
 		humanoid.WalkSpeed = 16 + val
 	end
 end)
 
--- 9. C-FRAME SPEED BOOST (0-1000)
+-- 9. C-FRAME SPEED BOOST
 local cframeSpeed = 0
 createSlider("CFRAME SPEED BOOST", 0, 1000, 0, function(val)
 	cframeSpeed = val
 end)
 
-RunService.RenderStepped:Connect(function()
+trackConnection(RunService.RenderStepped:Connect(function()
 	if cframeSpeed > 0 and rootPart then
 		local moveDir = humanoid.MoveDirection
 		if moveDir.Magnitude > 0 then
 			rootPart.CFrame = rootPart.CFrame + (moveDir * (cframeSpeed / 50))
 		end
 	end
+end))
+
+--------------------------------------------------------------------------------
+-- UNLOAD BUTTON (Panic / Clean Exit)
+--------------------------------------------------------------------------------
+local unloadBtn = Instance.new("TextButton")
+unloadBtn.Parent = scrollContainer
+unloadBtn.BackgroundColor3 = Color3.fromRGB(60, 10, 10)
+unloadBtn.Size = UDim2.new(0.9, 0, 0, 45)
+unloadBtn.Font = Enum.Font.Code
+unloadBtn.Text = "  [!] UNLOAD SCRIPT"
+unloadBtn.TextColor3 = Color3.fromRGB(255, 50, 50)
+unloadBtn.TextSize = 14
+unloadBtn.TextXAlignment = Enum.TextXAlignment.Left
+
+local unloadCorner = Instance.new("UICorner")
+unloadCorner.CornerRadius = UDim.new(0, 8)
+unloadCorner.Parent = unloadBtn
+
+local unloadStroke = Instance.new("UIStroke")
+unloadStroke.Parent = unloadBtn
+unloadStroke.Color = Color3.fromRGB(200, 40, 40)
+unloadStroke.Thickness = 1
+
+unloadBtn.MouseButton1Click:Connect(function()
+	-- Disconnect all active loops and event listeners
+	for _, conn in ipairs(activeConnections) do
+		conn:Disconnect()
+	end
+	workspace.Gravity = 196.2
+	if humanoid then
+		humanoid.WalkSpeed = 16
+		humanoid.JumpPower = 50
+	end
+	screenGui:Destroy()
 end)
 
 --------------------------------------------------------------------------------
--- 30X COOLER OPEN / CLOSE ANIMATION LOGIC
+-- 30X COOLER SPRING OPEN / CLOSE ANIMATION LOGIC
 --------------------------------------------------------------------------------
 local menuOpen = false
 
@@ -414,14 +508,16 @@ toggleBall.MouseButton1Click:Connect(function()
 		mainFrame.Size = UDim2.new(0, 0, 0, 0)
 		mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 		
-		TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		-- Snappy Back/Spring open effect
+		TweenService:Create(mainFrame, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
 			Size = UDim2.new(0, 350, 0, 400),
 			Position = UDim2.new(0.5, -175, 0.5, -200)
 		}):Play()
 		
-		TweenService:Create(toggleBall, TweenInfo.new(0.3), {Rotation = 360}):Play()
+		TweenService:Create(toggleBall, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Rotation = 360, BackgroundColor3 = Color3.fromRGB(0, 60, 20)}):Play()
 	else
-		local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+		-- Smooth close effect
+		local tween = TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {
 			Size = UDim2.new(0, 0, 0, 0),
 			Position = UDim2.new(0.5, 0, 0.5, 0)
 		})
@@ -432,19 +528,19 @@ toggleBall.MouseButton1Click:Connect(function()
 			end
 		end)
 		
-		TweenService:Create(toggleBall, TweenInfo.new(0.3), {Rotation = 0}):Play()
+		TweenService:Create(toggleBall, TweenInfo.new(0.3), {Rotation = 0, BackgroundColor3 = Color3.fromRGB(0, 20, 5)}):Play()
 	end
 end)
 
 -- Make toggle ball draggable for mobile convenience
 local draggingBall = false
-local dragStart, startPos
+local ballDragStart, ballStartPos
 
 toggleBall.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		draggingBall = true
-		dragStart = input.Position
-		startPos = toggleBall.Position
+		ballDragStart = input.Position
+		ballStartPos = toggleBall.Position
 		input.Changed:Connect(function()
 			if input.UserInputState == Enum.UserInputState.End then
 				draggingBall = false
@@ -453,11 +549,11 @@ toggleBall.InputBegan:Connect(function(input)
 	end
 end)
 
-UserInputService.InputChanged:Connect(function(input)
+trackConnection(UserInputService.InputChanged:Connect(function(input)
 	if draggingBall and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-		local delta = input.Position - dragStart
-		toggleBall.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		local delta = input.Position - ballDragStart
+		toggleBall.Position = UDim2.new(ballStartPos.X.Scale, ballStartPos.X.Offset + delta.X, ballStartPos.Y.Scale, ballStartPos.Y.Offset + delta.Y)
 	end
-end)
+end))
 
-print("Matrix Mod Menu loaded successfully.")
+print("Matrix Mod Menu (Upgraded) loaded successfully.")
