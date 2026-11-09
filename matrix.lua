@@ -601,33 +601,7 @@ table.insert(connections, RunService.RenderStepped:Connect(function()
 		if UserInputService:IsKeyDown(Enum.KeyCode.D) or UserInputService:IsKeyDown(Enum.KeyCode.Right) then
 			moveDir = moveDir + camCFrame.RightVector
 		end
-		rootPart.Velocity = Vector3.new(0, 1, 0) -- anti gravity ef-- 11. FLY & FLY SPEED (10-500)
-local flyEnabled = false
-local flySpeed = 50
-createToggle("FLY", function(state)
-	flyEnabled = state
-end)
-createSlider("FLY SPEED", 10, 500, 50, function(val)
-	flySpeed = val
-end)
-
-table.insert(connections, RunService.RenderStepped:Connect(function()
-	if flyEnabled and rootPart then
-		local camCFrame = Camera.CFrame
-		local moveDir = Vector3.new()
-		if UserInputService:IsKeyDown(Enum.KeyCode.W) or UserInputService:IsKeyDown(Enum.KeyCode.Up) then
-			moveDir = moveDir + camCFrame.LookVector
-		end
-		if UserInputService:IsKeyDown(Enum.KeyCode.S) or UserInputService:IsKeyDown(Enum.KeyCode.Down) then
-			moveDir = moveDir - camCFrame.LookVector
-		end
-		if UserInputService:IsKeyDown(Enum.KeyCode.A) or UserInputService:IsKeyDown(Enum.KeyCode.Left) then
-			moveDir = moveDir - camCFrame.RightVector
-		end
-		if UserInputService:IsKeyDown(Enum.KeyCode.D) or UserInputService:IsKeyDown(Enum.KeyCode.Right) then
-			moveDir = moveDir + camCFrame.RightVector
-		end
-		rootPart.Velocity = Vector3.new(0, 1, 0) -- anti gravity effect while flying
+		rootPart.Velocity = Vector3.new(0, 1, 0) -- anti gravity ef		rootPart.Velocity = Vector3.new(0, 1, 0) -- anti gravity effect while flying
 		rootPart.CFrame = rootPart.CFrame + (moveDir * (flySpeed / 20))
 	end
 end))
@@ -734,4 +708,3 @@ table.insert(connections, toggleBall.MouseButton1Click:Connect(function()
 end))
 
 print("Matrix Mod Menu loaded successfully.")
-				
